@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Alembic
+alembic/versions/*.pyc
+
+# Git
+.git/
+.gitignore
+
+# Docs
+*.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Others
+tests/
+.mypy_cache/
+.ruff_cache/
+
