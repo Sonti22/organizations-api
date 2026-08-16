@@ -40,7 +40,7 @@ REST API приложение для справочника **Организац
 
 Все запросы требуют заголовок `X-API-Key`.
 
-Пример:
+Пример：
 ```bash
 curl -H "X-API-Key: your-api-key" http://localhost:8000/api/v1/organizations
 ```
@@ -59,7 +59,7 @@ app.include_router(api_router, prefix=settings.api_v1_prefix)
 async def health_check() -> dict[str, str]:
     """
     Health check endpoint.
-    
+
     Returns:
         dict: Status message
     """
@@ -74,7 +74,7 @@ async def health_check() -> dict[str, str]:
 async def root() -> dict[str, str]:
     """
     Root endpoint with API information.
-    
+
     Returns:
         dict: API info
     """
@@ -85,23 +85,3 @@ async def root() -> dict[str, str]:
         "redoc": "/redoc",
         "health": "/health",
     }
-
-
-# Exception handlers
-@app.exception_handler(404)
-async def not_found_handler(request, exc):
-    """Handle 404 errors."""
-    return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
-        content={"detail": "Resource not found"},
-    )
-
-
-@app.exception_handler(500)
-async def internal_error_handler(request, exc):
-    """Handle 500 errors."""
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": "Internal server error"},
-    )
-
