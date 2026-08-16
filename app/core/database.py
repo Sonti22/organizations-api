@@ -1,7 +1,7 @@
 """Database engine and session factory."""
 
 from collections.abc import AsyncGenerator
-from typing import Any
+from typing import NoReturn
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
@@ -26,13 +26,12 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, Any]:
-    """
-    Dependency для получения async database session.
-    
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """Dependency for obtaining an async database session.
+
     Yields:
         AsyncSession: Database session instance
-        
+
     Example:
         @app.get("/organizations")
         async def get_orgs(db: AsyncSession = Depends(get_db)):
@@ -45,7 +44,4 @@ async def get_db() -> AsyncGenerator[AsyncSession, Any]:
         except Exception:
             await session.rollback()
             raise
-        finally:
-            await session.close()
-
-
+    # The async context manager automatically closes the session; no explicit close needed.
