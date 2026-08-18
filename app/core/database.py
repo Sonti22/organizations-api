@@ -28,15 +28,10 @@ AsyncSessionLocal = async_sessionmaker(
 
 async def get_db() -> AsyncGenerator[AsyncSession, Any]:
     """
-    Dependency для получения async database session.
-    
+    Dependency for obtaining an async database session.
+
     Yields:
         AsyncSession: Database session instance
-        
-    Example:
-        @app.get("/organizations")
-        async def get_orgs(db: AsyncSession = Depends(get_db)):
-            ...
     """
     async with AsyncSessionLocal() as session:
         try:
@@ -45,7 +40,4 @@ async def get_db() -> AsyncGenerator[AsyncSession, Any]:
         except Exception:
             await session.rollback()
             raise
-        finally:
-            await session.close()
-
-
+        # No explicit close needed; the async context manager handles it.
