@@ -3,11 +3,14 @@
 from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
 
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, Depends
 from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
 
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.core.database import get_db
 
 
 @asynccontextmanager
@@ -56,13 +59,23 @@ app.include_router(api_router, prefix=settings.api_v1_prefix)
 
 
 @app.get("/health", tags=["Health"], summary="Health check")
-async def health_check() -> dict[str, str]:
+async def health_check(db: AsyncSession = Depends(get_db)) -> dict[str, str]:
     """
     Health check endpoint.
-    
+
     Returns:
-        dict: Status message
+        dict: Status message including DB connectivity.
     """
+    try:
+        # Simple query to verify DB connection
+        await db.execute(text("SELECT 1"))
+    except Exception as exc:  # pragma: no cover
+        return {
+            "status": "unhealthy",
+            "error": str(exc),
+            "app": settings.app_name,
+            "version": settings.app_version,
+        }
     return {
         "status": "ok",
         "app": settings.app_name,
@@ -74,7 +87,7 @@ async def health_check() -> dict[str, str]:
 async def root() -> dict[str, str]:
     """
     Root endpoint with API information.
-    
+
     Returns:
         dict: API info
     """
@@ -104,4 +117,3 @@ async def internal_error_handler(request, exc):
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detail": "Internal server error"},
     )
-
