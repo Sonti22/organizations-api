@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.core.database import engine
 
 
 @asynccontextmanager
@@ -19,6 +20,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     yield
     # Shutdown
     print(f"🛑 Shutting down {settings.app_name}")
+    # Properly close the async DB engine to release connections
+    await engine.dispose()
 
 
 # Create FastAPI app
@@ -59,7 +62,7 @@ app.include_router(api_router, prefix=settings.api_v1_prefix)
 async def health_check() -> dict[str, str]:
     """
     Health check endpoint.
-    
+
     Returns:
         dict: Status message
     """
@@ -74,7 +77,7 @@ async def health_check() -> dict[str, str]:
 async def root() -> dict[str, str]:
     """
     Root endpoint with API information.
-    
+
     Returns:
         dict: API info
     """
@@ -104,4 +107,3 @@ async def internal_error_handler(request, exc):
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detail": "Internal server error"},
     )
-
